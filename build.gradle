@@ -1,0 +1,56 @@
+allprojects {
+  //Put instructions for all projects
+  apply plugin: 'eclipse'
+}
+
+//apply plugin: "sonar-runner"
+repositories {
+    jcenter()
+}
+
+//sonarRunner {
+//    sonarProperties {
+//        property "sonar.host.url", "http://127.0.0.1:9010"
+//        property "sonar.jdbc.url", "jdbc:mysql://my.server.com/sonar"
+//        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+//        property "sonar.jdbc.username", "Fred Flintstone"
+//        property "sonar.jdbc.password", "very clever"
+//    }
+//  }
+
+
+// Commands only applied to subprojects (Datasource, GenerateLocalizationData and iMonserver)
+subprojects {
+  apply plugin: "java"
+
+  repositories {
+      mavenCentral()
+  }
+
+  dependencies {
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.8.7'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // log4j
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.3'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
+
+
+ }
+
+
+  jar {
+     manifest.attributes provider: 'sebastien brugalieres'
+  }
+
+  def dest = "/Users/sebastien/Documents/Java-Dev/MyRepository"
+
+  uploadArchives {
+      configuration
+      repositories {
+         flatDir {
+             dirs dest
+         }
+      }
+  }
+}

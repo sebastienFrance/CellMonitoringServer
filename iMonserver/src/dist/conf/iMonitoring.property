@@ -1,0 +1,44 @@
+# a comment
+! a comment
+
+
+KPIDictionary = /Users/sebastien/Documents/Java-Dev/Inputs/iMonitoring/KPIDictionaries.xml
+
+NetworkDatabaseDirectory = /Users/sebastien/Documents/Java-Dev/Data
+NetworkDatabase = /Users/sebastien/Documents/Java-Dev/Data/latest/NetworkTopology.db
+datasourceDatabase = /Users/sebastien/Documents/Java-Dev/Data/datasource.db
+usersDatabase = /Users/sebastien/Documents/Java-Dev/Data/users.db
+SiteImageDatabaseDirectory = /Users/sebastien/Documents/Java-Dev/Data/Images
+useDatabase = true
+
+FindCellsByGeoIndex = true
+
+# KPIPLUG is either "Empty" or "EQL"
+#KPIPlug = EQL
+KPIPlug = Empty
+JSONEncoding = true
+#JSONEncoding = false
+
+LTE_NPO_IP = 192.168.0.1
+LTE_EQL_PORT = 8443
+LTE_EQL_UserName = user
+LTE_EQL_Password = password
+
+WCDMA_NPO_IP = 192.168.0.2
+WCDMA_EQL_PORT = 8443
+WCDMA_EQL_UserName = user
+WCDMA_EQL_Password = password
+
+GSM_NPO_IP = 192.169.0.3
+GSM_EQL_PORT = 8443
+GSM_EQL_UserName = user
+GSM_EQL_Password = password
+
+DATASOURCE_FILE = /Users/sebastien/Documents/Java-Dev/Inputs/iMonitoring/Datasources.xml
+
+LOG_FILE = /Users/sebastien/Documents/Java-Dev/Data/log/iMonitoringLog.txt
+ZONE_FILE = /Users/sebastien/Documents/Java-Dev/Data/latest/Zone.csv
+
+KPI_SIMU = /Users/sebastien/Documents/Java-Dev/Inputs/iMonitoring/KPISimu.csv
+
+WebServerPropertyFile = /Users/sebastien/Documents/Java-Dev/CellMonitoringServer/iMonserver/build/install/iMonserver/conf/webServer.property

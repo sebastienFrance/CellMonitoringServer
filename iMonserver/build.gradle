@@ -1,0 +1,227 @@
+apply plugin: 'java-library-distribution'
+
+
+archivesBaseName = "iMonserver"
+sourceCompatibility = 1.8
+version = '1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Cell Monitoring server',
+                   'Implementation-Version': version
+    }
+}
+
+
+dependencies {
+  compile project(':CommonUtilities')
+  compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.2'
+  compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3'
+  compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
+  compile group: 'net.sf.json-lib', name: 'json-lib', version: '2.4', classifier: 'jdk15'
+
+  // Tomcat embedded
+  compile 'org.apache.tomcat:tomcat-catalina:7.0.57'
+  compile 'org.apache.tomcat:tomcat-util:7.0.57'
+  compile 'org.apache.tomcat.embed:tomcat-embed-core:7.0.57'
+
+  // Jetty embedded
+  compile 'org.eclipse.jetty:jetty-server:9.3.0.v20150612'
+  //compile 'org.eclipse.jetty:jetty-servlet:9.0.0.RC2'
+  //compile 'org.eclipse.jetty:jetty-server:9.0.0.RC2'
+  compile 'org.eclipse.jetty:jetty-servlet:9.3.0.v20150612'
+  compile 'org.eclipse.jetty.http2:http2-common:9.3.0.v20150612'
+  compile 'org.eclipse.jetty.http2:http2-hpack:9.3.0.v20150612'
+  compile 'org.eclipse.jetty.http2:http2-server:9.3.0.v20150612'
+  compile 'org.mortbay.jetty.alpn:alpn-boot:8.1.3.v20150130'
+  compile 'org.eclipse.jetty:jetty-alpn-server:9.3.0.v20150612'
+
+}
+
+
+buildscript {
+
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.hidetake:gradle-ssh-plugin:1.1.1'
+
+  }
+}
+
+apply plugin: 'org.hidetake.ssh'
+
+// new server: 151.80.40.13
+// old server: 91.121.68.70
+def targetHost = '151.80.40.13'
+
+remotes {
+  webServer {
+    host = "$targetHost"
+    user = 'root'
+    identity = file('/Users/sebastien/.ssh/id_rsa')
+  }
+}
+
+def jmeterInstallDir = '/Users/sebastien/Documents/Java-Dev/apache-jmeter-2.13'
+def jmeterBinDir = jmeterInstallDir + '/bin'
+def jmeterTestDir = '/Users/sebastien/Documents/Java-Dev/CellMonitoringServer/iMonserver/src/dist/tests'
+def jmeterOutputDir = '/Users/sebastien/Desktop'
+
+task executeJmeterTests(type:Exec) {
+  description = 'Execute the Jmeter test plan.'
+  workingDir "$jmeterBinDir"
+  commandLine './jmeter.sh','-n','-t', "$jmeterTestDir/testJmeter.jmx",
+              '-l', "$jmeterOutputDir/log.jtl", '-JNumberOfUsers=1', '-JUsersRampUp=1',
+              '-JNumberOfTestPlanExecution=1', '-JnumberOfCellsPerUsers=3', "-JTargetHost=$targetHost"
+}
+
+task executeJmeterLocalTests(type:Exec) {
+  description = 'Execute the Jmeter test plan on local machine.'
+  workingDir "$jmeterBinDir"
+  commandLine './jmeter.sh','-n','-t', "$jmeterTestDir/testJmeter.jmx",
+              '-l', "$jmeterOutputDir/log.jtl", '-JNumberOfUsers=1', '-JUsersRampUp=1',
+              '-JNumberOfTestPlanExecution=1', '-JnumberOfCellsPerUsers=3', "-JTargetHost=127.0.0.1"
+}
+
+task executeJmeterStressTests(type:Exec) {
+  description = 'Execute Stress test Jmeter test plan.'
+  workingDir "$jmeterBinDir"
+  commandLine './jmeter.sh','-n','-t', "$jmeterTestDir/testJmeter.jmx",
+              '-l', "$jmeterOutputDir/log.jtl", '-JNumberOfUsers=40', '-JUsersRampUp=300',
+              '-JNumberOfTestPlanExecution=100', '-JnumberOfCellsPerUsers=10', "-JTargetHost=$targetHost"
+}
+
+task deleteOldJmeterTests(type:Exec) {
+  description = 'Delete Jmeter test result.'
+  commandLine 'rm','-f', "$jmeterOutputDir/log.jtl"
+}
+
+// remoteBaseDir should contain something like iMonserver-1.0 where
+// baseName is 'iMonserver' and version is '1.0'
+def remoteBaseDir = distZip.baseName + '-' + distZip.version
+def remoteLibDir = remoteBaseDir + '/lib'
+def remoteScriptDir = remoteBaseDir + '/scripts'
+def remoteConfDir = '$HOME/iMonserverConf'
+def stopCommand = 'stop.sh'
+def traceDirectory = '$HOME/iMonserverTraces'
+def startCommand = "$remoteScriptDir" + "/start.sh $remoteBaseDir $remoteConfDir $traceDirectory"
+
+task deployFull(dependsOn: distZip) << {
+  description = 'Build and deploy a full package and executes Jmeter test plan.'
+  ssh.run {
+
+    session(remotes.webServer) {
+      println "Stop old server...$stopCommand"
+      execute "$remoteScriptDir/$stopCommand", ignoreError: true
+      execute "rm -fr $remoteBaseDir", ignoreError: true
+      println "uploading archive ($distZip.archiveName)..."
+      put from: distZip.archivePath, into: './'
+      println "unzipping archive ($distZip.archiveName)..."
+      execute "unzip $distZip.archiveName"
+      execute "rm -fr $distZip.archiveName"
+      println "Starting server...$startCommand"
+      execute "$startCommand"
+    }
+  }
+
+  // Wait 5 second before to start the tests
+  println "Waiting process to start..."
+  sleep(10 * 1000)
+  println "Starting the Jmeter tests..."
+  tasks.deleteOldJmeterTests.execute()
+  tasks.executeJmeterTests.execute()
+  println "End of Jmeter tests."
+}
+
+task deploySmall(dependsOn: assemble) << {
+  description = 'Build only internal jar, deploy on server and execute Jmeter test plan.'
+
+  ssh.run {
+
+    session(remotes.webServer) {
+      println "Stop old server...$stopCommand"
+      execute "$remoteScriptDir/$stopCommand", ignoreError: true
+
+      // install all jar from iMonserver (and delete first the old ones)
+      FileTree tree = fileTree(dir: project.libsDir, include: '*.jar')
+      tree.each {File theFile ->
+        println "Uploading $theFile..."
+        def fileNameToRemove = theFile.getName()
+        execute "rm -fr $remoteBaseDir/$fileNameToRemove", ignoreError: true
+        put from: theFile,  into: remoteBaseDir
+      }
+
+      // install all jar from CommonUtilities (and delete first the old ones)
+      tree = fileTree(dir: project(':CommonUtilities').project.libsDir, include: '*.jar')
+      tree.each {File theFile ->
+        println "Uploading $theFile..."
+        def fileNameToRemove = theFile.getName()
+        execute "rm -fr $remoteLibDir/$fileNameToRemove", ignoreError: true
+        put from: theFile,  into: remoteLibDir
+      }
+
+      println "Starting server...$startCommand"
+      execute "$startCommand"
+    }
+  }
+
+  // Wait 5 second before to start the tests
+  println "Waiting process to start..."
+  sleep(10 * 1000)
+  println "Starting the Jmeter tests..."
+  tasks.deleteOldJmeterTests.execute()
+  tasks.executeJmeterTests.execute()
+  println "End of Jmeter tests."
+}
+
+
+
+ task deployLocal(dependsOn: installDist) << {
+   description = "Build and start locally."
+
+   def startLocalCommand = "$installDist.destinationDir" + "/scripts/start.sh"
+   def stopLocalCommand = "$installDist.destinationDir" + "/scripts/stop.sh"
+   def localTraceDirectory = "$installDist.destinationDir" + "/trace"
+
+   exec {
+     println "Stopping iMonserver..."
+     commandLine "$stopLocalCommand"
+   }
+
+   exec {
+     println "Starting iMonserver on local workstation..."
+     println "-> traces ($localTraceDirectory)..."
+     environment("IMONITORING_PROP_FILE", "/Users/sebastien/Documents/Java-Dev/CellMonitoringServer/iMonserver/build/install/iMonserver/conf/iMonitoring.property")
+     commandLine "$startLocalCommand", "$installDist.destinationDir", "$installDist.destinationDir/conf", "$localTraceDirectory"
+   }
+
+   // Wait 5 second before to start the tests
+   println "Waiting process to start..."
+   sleep(10 * 1000)
+   println "Starting the Jmeter tests..."
+   tasks.deleteOldJmeterTests.execute()
+   tasks.executeJmeterLocalTests.execute()
+   println "End of Jmeter tests."
+}
+
+// Code below was used to deploy and build a war
+
+//apply plugin: "war"
+
+//war {
+// webInf { from 'WebContent/WEB-INF' }
+//}
+
+// task deploy << {
+//   ssh.run {
+//     session(remotes.webServer) {
+//       execute 'service tomcat7 stop'
+//       execute 'rm -fr /var/lib/tomcat7/webapps/iMonserver'
+//       put from: '/Users/sebastien/Documents/Java-Dev/CellMonitoringServer/iMonserver/build/libs/iMonserver.war', into: '/var/lib/tomcat7/webapps/'
+//       execute 'service tomcat7 start'
+//      // execute 'sudo service tomcat restart'
+//     }
+//   }
+// }

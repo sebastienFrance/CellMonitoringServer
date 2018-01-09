@@ -1,0 +1,24 @@
+//apply plugin: "java"
+archivesBaseName = "commonUtilities"
+version = '1.0'
+
+repositories {
+  mavenCentral()
+  maven {
+    url "https://oss.sonatype.org/content/groups/public"
+  }
+}
+
+jar {
+    manifest {
+        attributes 'Specification-Title': 'Common utility classes',
+                   'Specification-Version': version,
+                   'Specification-Vendor' : 'Seb Software company',
+                   'Implementation-Title' : 'com.seb',
+                   'Implementation-Version' :  version,
+                   'Implementation-Vendor' : 'Seb Software company'
+    }
+}
+
+// default taks executed when no parameter is provided on command line
+defaultTasks 'assemble'

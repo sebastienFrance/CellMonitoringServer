@@ -1,0 +1,47 @@
+# a comment
+! a comment
+
+LTESnapshotDirectory = /Users/sebastien/Desktop/Snapshot/Last       
+#LTESnapshotDirectory = /Users/sebastien/Documents/Java-Dev/Snapshots/LTE     
+#LTESnapshotDirectory = /Users/sebastien/Documents/Java-Dev/SmallSnapshots/LTE     
+LTESnapshotFileExtension = .xcm
+LTEAttributeFileName = /Users/sebastien/Documents/Java-Dev/Inputs/Attributes/LTE_Attributes.xml 
+
+WCDMASnapshotDirectory = /Users/sebastien/Desktop/Snapshots    
+#WCDMASnapshotDirectory = /Users/sebastien/Documents/Java-Dev/Snapshots/WCDMA   
+#WCDMASnapshotDirectory = /Users/sebastien/Documents/Java-Dev/SmallSnapshots/WCDMA   
+WCDMASnapshotFileExtension = .xml
+WCDMAAttributeFileName = /Users/sebastien/Documents/Java-Dev/Inputs/Attributes/WCDMA_Attributes.xml 
+GSMSnapshot = toto
+GSMSnapshotAdj = titi
+
+outputDirectory = /Users/sebastien/Documents/Java-Dev/Data  
+outputDatabaseFileName = NetworkTopology.db
+outputDatasourceDirectory = /Users/sebastien/Documents/Java-Dev/Data  
+outputDatasourceDatabaseFileName = datasource.db
+
+relocateOnly = FALSE
+relocate = FALSE
+
+# Coordinates
+#VersaillesLat = 48.812823;
+#VersaillesLong = 2.127711;
+#VxLat = 48.668193;
+#VxLong = 2.239185;
+#WashingtonLat = 38.893826;
+#WashingtonLong = -77.030804;
+#PhoenixLat = 33.448420;
+#PhoenixLong = -112.073901;
+#SanAntonioLat = 29.425640;
+#SanAntonioLong = -98.494394;
+#CascaisLat = 38.413780;
+#CascaisLong = -9.254633;
+
+relocateSourceCoordinates = 33.448420,-112.073901
+relocateTargetCoordinates = 48.812823,2.127711
+
+anonymize = FALSE
+
+inputFileNameAnonymize = /Users/sebastien/Documents/Java-Dev/Inputs/RamdomData/CompleteSitesList.csv  
+
+

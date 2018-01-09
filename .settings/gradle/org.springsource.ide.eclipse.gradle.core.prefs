@@ -1,0 +1,5 @@
+#org.springsource.ide.eclipse.gradle.core.preferences.GradleProjectPreferences
+#Sat Apr 18 17:36:37 CEST 2015
+build.family.org.gradle.tooling.model.eclipse.HierarchicalEclipseProject=;CommonUtilities;GenerateLocalizationData;iMonserver;
+org.springsource.ide.eclipse.gradle.linkedresources=
+org.springsource.ide.eclipse.gradle.rootprojectloc=

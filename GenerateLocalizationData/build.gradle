@@ -1,0 +1,25 @@
+apply plugin: 'java-library-distribution'
+
+// task distZip to generate the .zip file that includes scripts and jars
+// task installDist to install the package in build/install directory
+
+archivesBaseName = "GenerateLocalizationData"
+version = '1.0'
+
+dependencies {
+  compile project(':CommonUtilities')
+
+  // Common-csv for GSM parsing only
+  compile 'org.apache.commons:commons-csv:1.1'
+}
+
+jar {
+    manifest {
+      attributes 'Specification-Title': 'Localization Data Generator',
+                 'Specification-Version': version,
+                 'Specification-Vendor' : 'Seb Software company',
+                 'Implementation-Title' : 'com.seb.networkTopology',
+                 'Implementation-Version' :  version,
+                 'Implementation-Vendor' : 'Seb Software company'
+    }
+}

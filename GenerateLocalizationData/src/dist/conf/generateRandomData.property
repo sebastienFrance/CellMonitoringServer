@@ -1,0 +1,54 @@
+# a comment
+! a comment
+
+KMLFileName = /Users/sebastien/Documents/Java-Dev/Inputs/KML/McDonalds_Fr.kml
+#CartoRadioSupportFileName = /Users/sebastien/Documents/Java-Dev/Inputs/CartoRadio/CartoradioSupport.csv
+#CartoRadioGeoCoordstFileName = /Users/sebastien/Documents/Java-Dev/Inputs/CartoRadio/CartoRadioGeoCoords.csv
+#OpenCellIdsFileName = /Users/sebastien/Documents/Java-Dev/Inputs/OpenCellIds/attCells.txt
+OpenCellIdsFileName = /Users/sebastien/Documents/Java-Dev/Inputs/OpenCellIds/orangeCells.csv
+#OpenCellIdsFileName = /Users/sebastien/Documents/Java-Dev/Inputs/OpenCellIds/allATT.csv
+OpenCellIdsCellPrefix = FR
+
+#Warning: OpenCellIdsFileVersion is 0 for old file format and 1 for the new file format
+OpenCellIdsFileVersion = 1
+OpenCellIdsMaxCellsPerSite = 1
+#OpenCellIdsFileName = /Users/sebastien/Documents/Java-Dev/Inputs/OpenCellIds/smallattCells.txt
+NodeOpenCellIdsSourceFileName = /Users/sebastien/Documents/Java-Dev/Inputs/RamdomData/USCompleteSitesList.csv
+
+outputDirectory =  /Users/sebastien/Documents/Java-Dev/Data
+outputDatabaseFileName = NetworkTopology.db
+outputDatasourceDirectory = /Users/sebastien/Documents/Java-Dev/Data
+outputDatasourceDatabaseFileName = datasource.db
+
+relocate = FALSE
+
+minLatitude = 48.805153
+maxLatitude = 48.907212
+minLongitude = 2.243466
+maxLongitude = 2.448843
+
+NodeSourceFileName = /Users/sebastien/Documents/Java-Dev/Inputs/RamdomData/CompleteSitesList.csv
+
+LTEFrequencies = 1700,2500,3200
+LTEReleases = LTE_1.0,LTE_2.0
+MaxDistanceForLTENeighborsInMeters = 10000
+LTEPercentageMeasuredByANR = 60
+
+WCDMAFrequencies = 2700,3500,4200
+WCDMAReleases = WCDMA_3.0,WCDMA_4.0,WCDMA_4.2
+MaxDistanceForWCDMANeighborsInMeters = 8000
+
+GSMFrequencies = 5700,6500,7200
+GSMReleases = GSM_1.0,GSM_2.0,GSM_3.1,GSM_4.3,GSM_5.0
+MaxDistanceForGSMNeighborsInMeters = 6000
+
+MaxNumberIntraRATNR = 72
+MaxNumberInterRATNR = 72
+
+MaxAttributesPerSection = 8
+AttributesSectionsName = Functions,Radio,Others
+
+ZoneFileName = Zone.csv
+NumberOfZonesPerTechno = 10
+ZoneCellMaxDistance = 5000
+ZoneMaxCellsPerZone = 1000
